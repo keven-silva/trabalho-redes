@@ -1,11 +1,65 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href=" 	https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+    <script src=" 	https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>Servidor</title>
 </head>
-<body>
-    <h1>Servidor</h1>
+<body style="background-color: gray">
+
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header text-center">
+                <h1>Servidor</h1>
+            </div>
+            <div class="card-body">
+                {% if connected %}
+                <div class="row mt-3">
+                    <h3>Conexão com o servidor</h3>
+                    <div class="col-6">
+                        <h4>Status:</h4>
+                    </div>
+                    {% if status == "Sucess"%}
+                        <div class="col-auto status-sucess">
+                            {{ status }}
+                        </div>
+                    {% else %}
+                    <div class="col-auto status-failed">
+                        {{ status }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="row mt-5">
+                    <div class="col-6">
+                        <h4>Mensagem:</h4>
+                    </div>
+                    <div class="col-auto style-msg">
+                        {{ message }}
+                    </div>
+                </div>
+                {% else %}
+                    <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="host" class="form-label">Host:</label>
+                            <input type="text" id="host" name="host" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="port" class="form-label">Port:</label>
+                            <input type="text" id="port" name="port" class="form-control" >
+                        </div>
+                        <div class="text-center ">
+                            <button type="submit" class="btn btn-dark">Conectar</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,0 +1,26 @@
+.style-msg {
+    background-color: bisque;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+    align-self: self-end;
+    border-radius: 8%;
+    width: 12rem;
+    text-align: center;
+}
+
+.status-sucess {
+    background-color: rgb(13, 129, 33);
+    color: aliceblue;
+    align-self: self-end;
+    border-radius: 8%;
+    width: 12rem;
+    text-align: center;   
+}
+.status-failed {
+    background-color: rgb(197, 4, 4);
+    color: aliceblue;
+    align-self: self-end;
+    border-radius: 8%;
+    width: 12rem;
+    text-align: center;  
+}

@@ -1,11 +1,47 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cliente</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{{title}}</title>
 </head>
-<body>
-    <h1>Teste de Socket</h1>
+
+<body style="background-color: gray">
+
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header text-center ">
+                <h1>Cliente</h1>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="host" class="form-label">Host:</label>
+                        <input type="text" id="host" name="host" class="form-control">
+                      </div>
+                      <div class="mb-3">
+                        <label for="port" class="form-label">Port:</label>
+                        <input type="text" id="port" name="port" class="form-control" >
+                      </div>
+                                        
+                    <div class="mb-3 text-center ">
+                        <label for="msg" class="form-label">Digite uma mensagem</label>
+                        <textarea id="msg" name="msg" rows="5" cols="120"></textarea>
+                    </div>
+                    <div class="text-center ">
+                        <button type="submit" class="btn btn-dark">Enviar</button>
+                    </div>
+                  </form>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
