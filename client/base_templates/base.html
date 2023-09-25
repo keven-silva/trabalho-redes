@@ -22,14 +22,21 @@
             <div class="card-body">
                 <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
+                    {% if msg %}
+                        <div class="mb-3">
+                            <h3>Menssagem Convertida:</h3>
+                            <p>{{msg}}</p>
+                        </div>
+                    {% endif %}
+
                     <div class="mb-3">
                         <label for="host" class="form-label">Host:</label>
                         <input type="text" id="host" name="host" class="form-control">
-                      </div>
-                      <div class="mb-3">
+                    </div>
+                    <div class="mb-3">
                         <label for="port" class="form-label">Port:</label>
                         <input type="text" id="port" name="port" class="form-control" >
-                      </div>
+                    </div>
                                         
                     <div class="mb-3 text-center ">
                         <label for="msg" class="form-label">Digite uma mensagem</label>

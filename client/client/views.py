@@ -12,13 +12,13 @@ class Client:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((self.host, self.port))
             if not msg:
-                s.sendall("Failed".encode())
+                s.sendall("Vázio".encode())
             else:
                 s.sendall(msg.encode())
-            
+
             data = s.recv(1024)
 
-        print(f"Received {data!r}")
+        return f"{data!r}"
 
 
 class IndexView(View):
@@ -34,10 +34,11 @@ class IndexView(View):
         msg = request.POST.get("msg")
 
         if len(msg) == 0:
-            msg = None 
+            msg = None
 
         client = Client(host, int(port))
-        client.send_msg(msg)
-        
-        context = {"title": "Cliente"}
+        translated_msg = client.send_msg(msg)
+
+
+        context = {"title": "Cliente", "msg": translated_msg}
         return render(request, self.template_name, context)
