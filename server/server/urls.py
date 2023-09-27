@@ -17,9 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .views import IndexView
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", IndexView.as_view(), name="index"),
+    path("", views.IndexView.as_view(), name="index"),
+    path("desconnect/", views.DisconnectView.as_view(), name="desconnect")
 ]

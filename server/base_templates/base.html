@@ -8,6 +8,7 @@
     <link rel="stylesheet" href=" 	https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
     <script src=" 	https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
     <title>Servidor</title>
 </head>
 <body style="background-color: gray">
@@ -18,48 +19,66 @@
                 <h1>Servidor</h1>
             </div>
             <div class="card-body">
-                {% comment %} {% if connected %}
-                <div class="row mt-3">
-                    <h3>Conexão com o servidor</h3>
-                    <div class="col-6">
-                        <h4>Status:</h4>
+                <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="port" class="form-label">Port:</label>
+                        <input type="text" id="port" name="port" class="form-control" >
                     </div>
-                    {% if status == "Sucess"%}
-                        <div class="col-auto status-sucess">
-                            {{ status }}
+                    
+                    <div class="row">
+                        <div class="text-end col-6 me-1">
+                            <a id="shutdown-link" class="btn btn-danger">Desligar</a>
                         </div>
-                    {% else %}
-                    <div class="col-auto status-failed">
-                        {{ status }}
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-dark px-4">Ligar</button>
+                        </div>
                     </div>
-                    {% endif %}
-                </div>
-                <div class="row mt-5">
-                    <div class="col-6">
-                        <h4>Mensagem:</h4>
-                    </div>
-                    <div class="col-auto style-msg">
-                        {{ message }}
-                    </div>
-                </div>
-                {% else %} {% endcomment %}
-                    <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="host" class="form-label">Host:</label>
-                            <input type="text" id="host" name="host" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label for="port" class="form-label">Port:</label>
-                            <input type="text" id="port" name="port" class="form-control" >
-                        </div>
-                        <div class="text-center ">
-                            <button type="submit" class="btn btn-dark">Conectar</button>
-                        </div>
-                    </form>
-                {% comment %} {% endif %} {% endcomment %}
+                </form>
+                {% for port in ports %}
+                    {{ port }}
+                {% empty %}
+                    <p>Nenhum porta aberta</p>
+                {% endfor %}
             </div>
         </div>
     </div>
 </body>
 </html>
+
+<script>
+    $(document).ready(function() {
+        let csrftoken = $('[name=csrfmiddlewaretoken]').val();
+        
+        $('#shutdown-link').on('click', function() {
+            let port = $('#port').val();
+            $.ajax({
+                url: `/desconnect/`,
+                type: 'POST',
+                data: { 
+                'port': port,
+                'csrfmiddlewaretoken': csrftoken
+            },
+            statusCode: {
+                404: function() {
+                alert( "não encontrada, por favor, recarregue a página" );
+              } 
+            },
+            success: function() {
+                $.ajax({
+                    url: `/`,
+                    type: 'GET',
+                    success: function() {
+                        $('body').html(response);
+                    }
+                });     
+            },
+            error: function(xhr, status, error) {
+            // Exibe mensagem de erro genérica
+            $('.alert-danger').text('Erro ao excluir linha.').show();
+            $('.alert-success').hide();
+            }
+        });
+      });
+    });
+</script>

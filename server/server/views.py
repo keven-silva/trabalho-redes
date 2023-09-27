@@ -1,46 +1,44 @@
 import socket
 from django.views import View
 from django.shortcuts import render
-from concurrent import futures
+import threading
 from googletrans import Translator
 
 
 class Server:
-    conn = ''
-    addr = ''
-
     def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
 
-    def init(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((self.host, self.port))
-        s.listen()
-        self.conn, self.addr = s.accept()
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind((self.host, self.port))
+        self.server_socket.listen()
 
-        self.send_msg_to_client()
+    def close(self):
+        self.server_socket.close()
 
-    def clonse_connection(self):
-        self.conn.close()
-
-    def send_msg_to_client(self):
+    def send_msg_to_client(self, conn):
         translator = Translator(
             service_urls=[
                 "translate.google.com",
             ]
         )
 
-        data = self.conn.recv(1024)
+        data = conn.recv(1024)
         if not data:
             return None
 
-        menssage = data.decode("utf-8")
+        message = data.decode("utf-8")
 
-        translated_language = translator.translate(menssage, dest="en")
+        translated_language = translator.translate(message, dest="en")
         translated_language = translated_language.text
-        print(f"Mensage: {translated_language}")
-        self.conn.send(translated_language.encode())
+        print(f"Message: {translated_language}")
+        conn.send(translated_language.encode())
+
+
+# Global dictionary to store server instances
+global servers
+servers = {}
 
 
 class IndexView(View):
@@ -50,16 +48,47 @@ class IndexView(View):
         return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
-        with futures.ThreadPoolExecutor() as executor:
-            host = request.POST.get("host")
-            port = request.POST.get("port")
-            futures_list = []
+        host = "127.0.0.1"
+        self.port = int(request.POST.get("port"))
 
-            server = Server(host, int(port))
-            futures_list.append(executor.submit(server.init))
+        # Create and start the server
+        server = Server(host, self.port)
+        servers[f"{self.port}"] = server
+        threading.Thread(target=self.handle_client, args=(server,)).start()
 
-            for future in futures.as_completed(futures_list):
-                result = future.result()
-                print(f'Message: {result}')
-                server.clonse_connection()
-                return render(request, self.template_name, {})
+        return render(request, self.template_name, {"ports": servers})
+
+    def handle_client(self, server):
+        while True:
+            conn, addr = server.server_socket.accept()
+            threading.Thread(target=self.handle_client_connection, args=(conn,)).start()
+
+    def handle_client_connection(self, conn):
+        try:
+            server_port = conn.getsockname()[1]
+            server = servers.get(str(server_port))
+            if server:
+                server.send_msg_to_client(conn)
+            else:
+                print(f"No server found for port {server_port}")
+        except Exception as e:
+            return f"Error handling client connection: {e}"
+
+
+class DisconnectView(View):
+    def get(self, request, *args, **kwargs):
+        context = {"ports": servers}
+        return render(request, "base.html", context)
+
+    def post(self, request, *args, **kwargs):
+        conn_port = request.POST.get("port")
+        aux = 0
+
+        for port, server in servers.items():
+            if port == conn_port:
+                server.close()
+                aux = port
+        if aux:
+            servers.pop(aux)
+        context = {"ports": servers}
+        return render(request, "base.html", context)
