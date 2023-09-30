@@ -33,33 +33,42 @@
                     </div>
                 </form>
                 <br>
-                <div class="mb-4 col-3">
-                  {% if ports %}
-                  <h4>Portas Abertas:</h4>
-                  <table
-                    class="table"
-                    style="border: 1px solid #000; border-collapse: collapse"
-                  >
-                    <thead>
-                      <tr>
-                        <th>Porta</th>
-                        <th>Ação</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for port in ports %}
-                      <tr>
-                        <td style="border-right: 1px solid #000">{{ port }}</td>
-                        <td>
-                          <a class="btn btn-danger shutdown-btn" data-port="{{ port }}">Desligar</a>
-                        </td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                  {% else %}
-                  <h4>Nenhuma Porta Aberta</h4>
-                  {% endif %}
+                <div class="row">
+                  <div class="mb-4 col-6">
+                    {% if ports %}
+                    <h4>Portas Abertas:</h4>
+                    <table
+                      class="table"
+                      style="border: 1px solid #000; border-collapse: collapse"
+                    >
+                      <thead>
+                        <tr>
+                          <th>Porta</th>
+                          <th>Ação</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for port in ports %}
+                        <tr>
+                          <td style="border-right: 1px solid #000">{{ port }}</td>
+                          <td>
+                            <a class="btn btn-danger shutdown-btn" data-port="{{ port }}">Desligar</a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    {% else %}
+                    <h4>Nenhuma Porta Aberta</h4>
+                    {% endif %}
+                  </div>
+                  
+                  <div class="mb-4 col-6">
+                    {% if port_already_connected %}
+                    <h4 style="color: red;">A Porta {{ port_already_connected }} já existe!</h4>
+                    <p>A porta {{ port_already_connected }} já existe e está aguardando requisições do cliente.</p>
+                    {% endif %}
+                  </div>
                 </div>
             </div>
         </div>

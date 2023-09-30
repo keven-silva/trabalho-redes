@@ -51,12 +51,24 @@ class IndexView(View):
         host = "127.0.0.1"
         self.port = int(request.POST.get("port"))
 
+        # Verifica se a porta já está ligada
+        if str(self.port) in servers:
+            context = {
+                "ports": servers,
+                "port_already_connected": self.port
+            }
+            return render(request, self.template_name, context)
+
         # Create and start the server
         server = Server(host, self.port)
         servers[f"{self.port}"] = server
         threading.Thread(target=self.handle_client, args=(server,)).start()
 
-        return render(request, self.template_name, {"ports": servers})
+        context = {
+                "ports": servers,
+                "port_already_connected": 0
+            }
+        return render(request, self.template_name, context)
 
     def handle_client(self, server):
         while True:
