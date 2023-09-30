@@ -51,12 +51,23 @@ class IndexView(View):
         host = "127.0.0.1"
         self.port = int(request.POST.get("port"))
 
+        # Verifica se ainda pode ligar portas (máximo 10)
+        if (len(servers) >= 10):
+            context = {
+                "ports": servers,
+                "port_already_connected": 0,
+                "port_created": 0,
+                "ports_maximum": self.port
+            }
+            return render(request, self.template_name, context)
+        
         # Verifica se a porta já está ligada
         if str(self.port) in servers:
             context = {
                 "ports": servers,
                 "port_already_connected": self.port,
-                "port_created": 0
+                "port_created": 0,
+                "ports_maximum": 0
             }
             return render(request, self.template_name, context)
 
@@ -68,7 +79,8 @@ class IndexView(View):
         context = {
                 "ports": servers,
                 "port_already_connected": 0,
-                "port_created": self.port
+                "port_created": self.port,
+                "ports_maximum": 0
             }
         return render(request, self.template_name, context)
 

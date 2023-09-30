@@ -37,27 +37,32 @@
                   <div class="mb-4 col-6">
                     {% if ports %}
                     <h4>Portas Abertas:</h4>
-                    <table
-                      class="table"
-                      style="border: 1px solid #000; border-collapse: collapse"
-                    >
-                      <thead>
-                        <tr>
-                          <th>Porta</th>
-                          <th>Ação</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for port in ports %}
-                        <tr>
-                          <td style="border-right: 1px solid #000">{{ port }}</td>
-                          <td>
-                            <a class="btn btn-danger shutdown-btn" data-port="{{ port }}">Desligar</a>
-                          </td>
-                        </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
+                      <div style="max-height: 300px; overflow-y: scroll;">
+                        <table class="table" style="border: 1px solid #000; border-collapse: collapse;">
+                          <thead>
+                            <tr>
+                              <th>Porta</th>
+                              <th>Ação</th>
+                            </tr>
+                          </thead>
+                          <tbody style="max-height: 200px; overflow-y: scroll;">
+                            {% for port in ports %}
+                            <tr>
+                              <td style="border-right: 1px solid #000">{{ port }}</td>
+                              <td>
+                                <a class="btn btn-danger shutdown-btn" data-port="{{ port }}">Desligar</a>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <th>Porta</th>
+                              <th>Ação</th>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
                     {% else %}
                     <h4>Nenhuma Porta Aberta</h4>
                     {% endif %}
@@ -72,6 +77,11 @@
                     {% if port_created %}
                     <h4 style="color: green;">Porta {{ port_created }} ligada com sucesso!</h4>
                     <p>A porta {{ port_created }} foi ligada e está aguardando requisições do cliente.</p>
+                    {% endif %}
+
+                    {% if ports_maximum %}
+                    <h4 style="color: red;">Máximo de portas ligadas atingido!</h4>
+                    <p>Não foi possível ligar a porta {{ ports_maximum }}, pois o servidor atingiu o máximo de portas ligadas simultaneamente (10 portas).</p>
                     {% endif %}
                   </div>
                 </div>
