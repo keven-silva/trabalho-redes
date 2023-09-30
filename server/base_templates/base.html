@@ -68,6 +68,11 @@
                     <h4 style="color: red;">A Porta {{ port_already_connected }} já existe!</h4>
                     <p>A porta {{ port_already_connected }} já existe e está aguardando requisições do cliente.</p>
                     {% endif %}
+
+                    {% if port_created %}
+                    <h4 style="color: green;">Porta {{ port_created }} ligada com sucesso!</h4>
+                    <p>A porta {{ port_created }} foi ligada e está aguardando requisições do cliente.</p>
+                    {% endif %}
                   </div>
                 </div>
             </div>

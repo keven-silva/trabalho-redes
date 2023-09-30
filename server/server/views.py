@@ -55,7 +55,8 @@ class IndexView(View):
         if str(self.port) in servers:
             context = {
                 "ports": servers,
-                "port_already_connected": self.port
+                "port_already_connected": self.port,
+                "port_created": 0
             }
             return render(request, self.template_name, context)
 
@@ -66,7 +67,8 @@ class IndexView(View):
 
         context = {
                 "ports": servers,
-                "port_already_connected": 0
+                "port_already_connected": 0,
+                "port_created": self.port
             }
         return render(request, self.template_name, context)
 
