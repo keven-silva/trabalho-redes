@@ -27,19 +27,40 @@
                     </div>
                     
                     <div class="row">
-                        <div class="text-end col-6 me-1">
-                            <a id="shutdown-link" class="btn btn-danger">Desligar</a>
-                        </div>
-                        <div class="col-auto">
+                        <div class="col-12">
                             <button type="submit" class="btn btn-dark px-4">Ligar</button>
                         </div>
                     </div>
                 </form>
-                {% for port in ports %}
-                    {{ port }}
-                {% empty %}
-                    <p>Nenhum porta aberta</p>
-                {% endfor %}
+                <br>
+                <div class="mb-4 col-3">
+                  {% if ports %}
+                  <h4>Portas Abertas:</h4>
+                  <table
+                    class="table"
+                    style="border: 1px solid #000; border-collapse: collapse"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Porta</th>
+                        <th>Ação</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for port in ports %}
+                      <tr>
+                        <td style="border-right: 1px solid #000">{{ port }}</td>
+                        <td>
+                          <a class="btn btn-danger shutdown-btn" data-port="{{ port }}">Desligar</a>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  {% else %}
+                  <h4>Nenhuma Porta Aberta</h4>
+                  {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -50,8 +71,8 @@
     $(document).ready(function() {
         let csrftoken = $('[name=csrfmiddlewaretoken]').val();
         
-        $('#shutdown-link').on('click', function() {
-            let port = $('#port').val();
+        $('.shutdown-btn').on('click', function() {
+            let port = $(this).data("port");
             $.ajax({
                 url: `/desconnect/`,
                 type: 'POST',
@@ -69,7 +90,8 @@
                     url: `/`,
                     type: 'GET',
                     success: function() {
-                        $('body').html(response);
+                        $(`.shutdown-btn[data-port="${port}"]`).closest("tr").remove();
+                        // $('body').html(response);
                     }
                 });     
             },
