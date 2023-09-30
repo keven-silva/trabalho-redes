@@ -1,7 +1,7 @@
 import socket
 from django.views import View
 from django.shortcuts import render
-
+import datetime
 
 class Client:
     def __init__(self, host: str, port: int):
@@ -18,7 +18,7 @@ class Client:
 
             data = s.recv(1024)
 
-        return f"{data!r}"
+        return f"{data.decode('utf-8')}"
 
 
 class IndexView(View):
@@ -29,7 +29,7 @@ class IndexView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        host = request.POST.get("host")
+        host = "127.0.0.1"
         port = request.POST.get("port")
         msg = request.POST.get("msg")
 
@@ -38,7 +38,7 @@ class IndexView(View):
 
         client = Client(host, int(port))
         translated_msg = client.send_msg(msg)
+        hour = datetime.datetime.now()
 
-
-        context = {"title": "Cliente", "msg": translated_msg}
+        context = {"title": "Cliente", "msg": translated_msg, "hour": hour}
         return render(request, self.template_name, context)
