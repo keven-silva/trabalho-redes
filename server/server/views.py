@@ -57,7 +57,8 @@ class IndexView(View):
                 "ports": servers,
                 "port_already_connected": 0,
                 "port_created": 0,
-                "ports_maximum": self.port
+                "ports_maximum": self.port,
+                "port_closed": 0
             }
             return render(request, self.template_name, context)
         
@@ -67,7 +68,8 @@ class IndexView(View):
                 "ports": servers,
                 "port_already_connected": self.port,
                 "port_created": 0,
-                "ports_maximum": 0
+                "ports_maximum": 0,
+                "port_closed": 0
             }
             return render(request, self.template_name, context)
 
@@ -80,7 +82,8 @@ class IndexView(View):
                 "ports": servers,
                 "port_already_connected": 0,
                 "port_created": self.port,
-                "ports_maximum": 0
+                "ports_maximum": 0,
+                "port_closed": 0
             }
         return render(request, self.template_name, context)
 
@@ -116,5 +119,13 @@ class DisconnectView(View):
                 aux = port
         if aux:
             servers.pop(aux)
-        context = {"ports": servers}
+        
+        context = {
+                "ports": servers,
+                "port_already_connected": 0,
+                "port_created": 0,
+                "ports_maximum": 0,
+                "port_closed": aux
+            }
+
         return render(request, "base.html", context)

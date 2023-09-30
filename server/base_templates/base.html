@@ -50,7 +50,11 @@
                             <tr>
                               <td style="border-right: 1px solid #000">{{ port }}</td>
                               <td>
-                                <a class="btn btn-danger shutdown-btn" data-port="{{ port }}">Desligar</a>
+                                <form action="{% url 'desconnect' %}" method="post">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="port" value="{{ port }}">
+                                  <button type="submit" class="btn btn-danger">Desligar</button>
+                                </form>
                               </td>
                             </tr>
                             {% endfor %}
@@ -83,6 +87,11 @@
                     <h4 style="color: red;">Máximo de portas ligadas atingido!</h4>
                     <p>Não foi possível ligar a porta {{ ports_maximum }}, pois o servidor atingiu o máximo de portas ligadas simultaneamente (10 portas).</p>
                     {% endif %}
+
+                    {% if port_closed %}
+                    <h4 style="color: green;">Porta {{ port_closed }} desligada com sucesso!</h4>
+                    <p>A porta {{ port_closed }} foi desligada.</p>
+                    {% endif %}
                   </div>
                 </div>
             </div>
@@ -90,41 +99,3 @@
     </div>
 </body>
 </html>
-
-<script>
-    $(document).ready(function() {
-        let csrftoken = $('[name=csrfmiddlewaretoken]').val();
-        
-        $('.shutdown-btn').on('click', function() {
-            let port = $(this).data("port");
-            $.ajax({
-                url: `/desconnect/`,
-                type: 'POST',
-                data: { 
-                'port': port,
-                'csrfmiddlewaretoken': csrftoken
-            },
-            statusCode: {
-                404: function() {
-                alert( "não encontrada, por favor, recarregue a página" );
-              } 
-            },
-            success: function() {
-                $.ajax({
-                    url: `/`,
-                    type: 'GET',
-                    success: function() {
-                        $(`.shutdown-btn[data-port="${port}"]`).closest("tr").remove();
-                        // $('body').html(response);
-                    }
-                });     
-            },
-            error: function(xhr, status, error) {
-            // Exibe mensagem de erro genérica
-            $('.alert-danger').text('Erro ao excluir linha.').show();
-            $('.alert-success').hide();
-            }
-        });
-      });
-    });
-</script>
