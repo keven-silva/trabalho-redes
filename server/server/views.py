@@ -29,19 +29,26 @@ class Server:
             ]
         )
 
-        data = conn.recv(1024)
+        data = conn.recv(4096)
         if not data:
             return None
 
-        message = data.decode("utf-8")
+        data_pkl = pickle.loads(data)
 
-        translated_language = translator.translate(message, dest="en")
+        translated_language = translator.translate(data_pkl["msg"], dest="en")
         translated_language = translated_language.text
         print(f"Message: {translated_language}")
-        
+
         files = os.listdir("server/")
-        hour = datetime.datetime.now()
-        data_dict = {"files": files, "message": translated_language, "hour": hour}
+        hour = datetime.datetime.now().strftime("%H:%M:%S")
+        read_file = open(f"server/{data_pkl['file_name']}", "r")
+
+        data_dict = {
+            "files": files,
+            "message": translated_language,
+            "hour": hour,
+            "data_file": read_file.read(),
+        }
         pkl = pickle.dumps(data_dict)
 
         conn.send(pkl)
@@ -63,16 +70,16 @@ class IndexView(View):
         self.port = int(request.POST.get("port"))
 
         # Verifica se ainda pode ligar portas (máximo 10)
-        if (len(servers) >= 10):
+        if len(servers) >= 10:
             context = {
                 "ports": servers,
                 "port_already_connected": 0,
                 "port_created": 0,
                 "ports_maximum": self.port,
-                "port_closed": 0
+                "port_closed": 0,
             }
             return render(request, self.template_name, context)
-        
+
         # Verifica se a porta já está ligada
         if str(self.port) in servers:
             context = {
@@ -80,7 +87,7 @@ class IndexView(View):
                 "port_already_connected": self.port,
                 "port_created": 0,
                 "ports_maximum": 0,
-                "port_closed": 0
+                "port_closed": 0,
             }
             return render(request, self.template_name, context)
 
@@ -90,12 +97,12 @@ class IndexView(View):
         threading.Thread(target=self.handle_client, args=(server,)).start()
 
         context = {
-                "ports": servers,
-                "port_already_connected": 0,
-                "port_created": self.port,
-                "ports_maximum": 0,
-                "port_closed": 0
-            }
+            "ports": servers,
+            "port_already_connected": 0,
+            "port_created": self.port,
+            "ports_maximum": 0,
+            "port_closed": 0,
+        }
         return render(request, self.template_name, context)
 
     def handle_client(self, server):
@@ -130,13 +137,13 @@ class DisconnectView(View):
                 aux = port
         if aux:
             servers.pop(aux)
-        
+
         context = {
-                "ports": servers,
-                "port_already_connected": 0,
-                "port_created": 0,
-                "ports_maximum": 0,
-                "port_closed": aux
-            }
+            "ports": servers,
+            "port_already_connected": 0,
+            "port_created": 0,
+            "ports_maximum": 0,
+            "port_closed": aux,
+        }
 
         return render(request, "base.html", context)
