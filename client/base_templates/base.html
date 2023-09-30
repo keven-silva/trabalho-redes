@@ -42,6 +42,17 @@
                             </h4>
                             <p>{{msg}}</p>
                             <p>Traduzida dia {{hour}}</p>
+                           
+                            <h4>
+                                Arquivos na pasta do servidor:
+                            </h4>
+                            <p class="ms-4">
+                                {% for file in files %}
+                                    {{ file }}
+                                    <br>
+                                {% endfor %}
+                            </p>
+                            
                             {% endif %}
                         </div>
                     </div>

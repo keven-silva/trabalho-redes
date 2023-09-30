@@ -1,7 +1,12 @@
 import socket
+import os
+import pickle
+import threading
+import datetime
+
+
 from django.views import View
 from django.shortcuts import render
-import threading
 from googletrans import Translator
 
 
@@ -33,7 +38,13 @@ class Server:
         translated_language = translator.translate(message, dest="en")
         translated_language = translated_language.text
         print(f"Message: {translated_language}")
-        conn.send(translated_language.encode())
+        
+        files = os.listdir("server/")
+        hour = datetime.datetime.now()
+        data_dict = {"files": files, "message": translated_language, "hour": hour}
+        pkl = pickle.dumps(data_dict)
+
+        conn.send(pkl)
 
 
 # Global dictionary to store server instances

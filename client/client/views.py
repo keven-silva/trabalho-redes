@@ -1,7 +1,9 @@
 import socket
+import pickle
 from django.views import View
 from django.shortcuts import render
 import datetime
+
 
 class Client:
     def __init__(self, host: str, port: int):
@@ -16,9 +18,10 @@ class Client:
             else:
                 s.sendall(msg.encode())
 
-            data = s.recv(1024)
+            data = s.recv(4096)
+            data_dict = pickle.loads(data)
 
-        return f"{data.decode('utf-8')}"
+        return data_dict
 
 
 class IndexView(View):
@@ -37,8 +40,20 @@ class IndexView(View):
             msg = None
 
         client = Client(host, int(port))
-        translated_msg = client.send_msg(msg)
-        hour = datetime.datetime.now()
+        data = client.send_msg(msg)
+        create_file(data)
 
-        context = {"title": "Cliente", "msg": translated_msg, "hour": hour}
+        context = {
+            "title": "Cliente",
+            "msg": data["message"],
+            "hour": data["hour"],
+            "files": data["files"],
+        }
         return render(request, self.template_name, context)
+
+
+def create_file(data: dict):
+    with open("client/client/file.txt", "w") as f:
+        f.write(f"Message: {data['message']}\n")
+        f.write(f"Hour: {data['hour']}\n")
+        f.write(f"Files: {data['files']}\n")
