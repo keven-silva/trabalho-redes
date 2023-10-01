@@ -26,18 +26,28 @@
 
                     <div class="mb-3">
                         <label for="file_name" class="form-label">Nome do arquivo:</label>
-                        <input type="text" id="file_name" name="file_name" class="form-control" >
+                        <input type="text" id="file_name" name="file_name" class="form-control" required="">
                     </div>
 
                     <div class="mb-3">
                         <label for="port" class="form-label">Port:</label>
-                        <input type="text" id="port" name="port" class="form-control" >
+                        <input
+                            type="number"
+                            id="port"
+                            name="port"
+                            class="form-control"
+                            required=""
+                            minlength="4"
+                            maxlength="4"
+                            min="0"
+                            oninput="validatePort()"
+                        />
                     </div>
                                 
                     <div class="row">
                         <div class="mb-4 col-6">
                             <label for="msg" class="form-label">Digite a mensagem a ser traduzida</label>
-                            <textarea id="msg" name="msg" rows="5" cols="120"></textarea>
+                            <textarea id="msg" name="msg" rows="5" cols="120" required=""></textarea>
                         </div>
 
                         <div class="mb-4 col-6">
@@ -71,4 +81,16 @@
     </div>
 </body>
 
+<script>
+    function validatePort() {
+      var input = document.getElementById("port");
+      var value = input.value;
+
+      if (value === "8000" || value === "8001" || value > 9999 || value < 1000) {
+        input.setCustomValidity("A porta deve ter 4 dígitos e os valores 8000 e 8001 não são permitidos.");
+      } else {
+        input.setCustomValidity("");
+      }
+    }
+  </script>
 </html>
