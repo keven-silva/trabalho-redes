@@ -25,11 +25,6 @@
                     {% csrf_token %}
 
                     <div class="mb-3">
-                        <label for="file_name" class="form-label">Nome do arquivo:</label>
-                        <input type="text" id="file_name" name="file_name" class="form-control" required="">
-                    </div>
-
-                    <div class="mb-3">
                         <label for="port" class="form-label">Port:</label>
                         <input
                             type="number"
@@ -56,7 +51,7 @@
                                 Menssagem Traduzida:
                             </h4>
                             <p>{{msg}}</p>
-                            <p>Traduzida dia {{hour}}</p>
+                            <p>Traduzida às {{hour}}</p>
                            
                             <h4>
                                 Arquivos na pasta do servidor:

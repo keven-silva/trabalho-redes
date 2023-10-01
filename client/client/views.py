@@ -2,7 +2,6 @@ import socket
 import pickle
 from django.views import View
 from django.shortcuts import render
-import datetime
 
 
 class Client:
@@ -45,7 +44,7 @@ class IndexView(View):
         data_to_serve = {"file_name": file_name, "msg": msg}
 
         data = client.send_msg(data_to_serve)
-        create_file(data['data_file'])
+        # create_file(data['data_file'])
 
         context = {
             "title": "Cliente",

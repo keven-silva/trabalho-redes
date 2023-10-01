@@ -41,13 +41,13 @@ class Server:
 
         files = os.listdir("server/")
         hour = datetime.datetime.now().strftime("%H:%M:%S")
-        read_file = open(f"server/{data_pkl['file_name']}", "r")
+        # read_file = open(f"server/{data_pkl['file_name']}", "r")
 
         data_dict = {
             "files": files,
             "message": translated_language,
             "hour": hour,
-            "data_file": read_file.read(),
+            # "data_file": read_file.read(),
         }
         pkl = pickle.dumps(data_dict)
 
